@@ -7,6 +7,7 @@ import com.vdt.authservice.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import com.vdt.authservice.exception.ErrorCode;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,6 @@ public class UserController {
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@RequestBody RegisterRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .message("Registration successful, please check email to activate")
                 .result(userService.register(request))
                 .build();
     }

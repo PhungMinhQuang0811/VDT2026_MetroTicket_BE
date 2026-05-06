@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import com.vdt.authservice.exception.ErrorCode;
 import org.springframework.web.bind.annotation.*;
 
 import com.vdt.authservice.dto.response.ApiResponse;
@@ -33,7 +34,6 @@ public class AuthController {
     public ApiResponse<Void> activate(@RequestParam String token) {
         authService.activateAccount(token);
         return ApiResponse.<Void>builder()
-                .message("Account activated successfully!")
                 .build();
     }
 
@@ -41,7 +41,6 @@ public class AuthController {
     public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request.getEmail());
         return ApiResponse.<Void>builder()
-                .message("Reset link sent to your email!")
                 .build();
     }
 
@@ -49,7 +48,6 @@ public class AuthController {
     public ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
         return ApiResponse.<Void>builder()
-                .message("Password reset successfully!")
                 .build();
     }
 
@@ -57,7 +55,6 @@ public class AuthController {
     public ApiResponse<Void> logout(HttpServletResponse response) {
         authService.logout(response);
         return ApiResponse.<Void>builder()
-                .message("Logged out successfully!")
                 .build();
     }
 
@@ -67,7 +64,6 @@ public class AuthController {
             HttpServletResponse response) {
         authService.refreshToken(refreshToken, response);
         return ApiResponse.<Void>builder()
-                .message("Token refreshed")
                 .build();
     }
 }

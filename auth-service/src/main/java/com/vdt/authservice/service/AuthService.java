@@ -10,6 +10,8 @@ import com.vdt.authservice.entity.Account;
 import com.vdt.authservice.external.notification.email.EmailService;
 import com.vdt.authservice.mapper.AuthMapper;
 import com.vdt.authservice.repository.AccountRepository;
+import com.vdt.authservice.exception.AppException;
+import com.vdt.authservice.exception.ErrorCode;
 import com.vdt.authservice.security.service.VerificationTokenService;
 import com.vdt.authservice.security.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
@@ -53,7 +55,7 @@ public class AuthService {
         );
 
         Account account = accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND_IN_DB));
 
         String token = jwtUtil.generateToken(account);
         String refreshToken = jwtUtil.generateRefreshToken(account);
@@ -68,11 +70,11 @@ public class AuthService {
     public void activateAccount(String token) {
         String accountId = verificationTokenService.getAccountIdByActivationToken(token);
         if (accountId == null) {
-            throw new RuntimeException("Invalid or expired token");
+            throw new AppException(ErrorCode.INVALID_ONETIME_TOKEN);
         }
 
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND_IN_DB));
 
         account.setActive(true);
         account.setEmailVerified(true);
@@ -83,7 +85,7 @@ public class AuthService {
 
     public void forgotPassword(String email) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_USED_BY_ANY_ACCOUNT));
 
         String token = verificationTokenService.generateResetPasswordToken(account.getId());
         emailService.sendEmail(account.getEmail(), "Reset Password", 
@@ -94,11 +96,11 @@ public class AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         String accountId = verificationTokenService.getAccountIdByResetPasswordToken(request.getToken());
         if (accountId == null) {
-            throw new RuntimeException("Invalid or expired token");
+            throw new AppException(ErrorCode.INVALID_ONETIME_TOKEN);
         }
 
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND_IN_DB));
 
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
         accountRepository.save(account);
@@ -115,14 +117,14 @@ public class AuthService {
 
     public void refreshToken(String refreshToken, HttpServletResponse response) {
         if (refreshToken == null) {
-            throw new RuntimeException("Refresh token is missing");
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         try {
             SignedJWT signedJWT = jwtUtil.verifyToken(refreshToken, true);
             String email = signedJWT.getJWTClaimsSet().getSubject();
             
             Account account = accountRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND_IN_DB));
                     
             String newAccessToken = jwtUtil.generateToken(account);
             String newRefreshToken = jwtUtil.generateRefreshToken(account);
@@ -130,9 +132,8 @@ public class AuthService {
             response.addHeader(HttpHeaders.SET_COOKIE, generateCookie("accessToken", newAccessToken, "/", accessTokenExpiration, true).toString());
             response.addHeader(HttpHeaders.SET_COOKIE, generateCookie("refreshToken", newRefreshToken, "/", refreshTokenExpiration, true).toString());
             
-
         } catch (Exception e) {
-            throw new RuntimeException("Invalid refresh token", e);
+            throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
     private ResponseCookie generateCookie(String cookieName, String cookieValue, String path, long maxAgeMiliseconds, boolean isHttpOnly) {

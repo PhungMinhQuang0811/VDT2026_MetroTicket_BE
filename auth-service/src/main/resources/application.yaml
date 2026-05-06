@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
   data:
     redis:
@@ -20,7 +20,7 @@ spring:
 
 app:
   init:
-    enabled: true
+    enabled: false
     admin:
       email: ${ADMIN_EMAIL}
       password: ${ADMIN_PASSWORD}

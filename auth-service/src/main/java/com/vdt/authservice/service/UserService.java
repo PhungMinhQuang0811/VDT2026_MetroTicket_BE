@@ -3,6 +3,8 @@ package com.vdt.authservice.service;
 import com.vdt.authservice.dto.request.user.RegisterRequest;
 import com.vdt.authservice.dto.response.user.UserResponse;
 import com.vdt.authservice.entity.Account;
+import com.vdt.authservice.exception.AppException;
+import com.vdt.authservice.exception.ErrorCode;
 import com.vdt.authservice.external.notification.email.EmailService;
 import com.vdt.authservice.mapper.UserMapper;
 import com.vdt.authservice.repository.AccountRepository;
@@ -28,7 +30,7 @@ public class UserService {
     @Transactional
     public UserResponse register(RegisterRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         Account account = Account.builder()

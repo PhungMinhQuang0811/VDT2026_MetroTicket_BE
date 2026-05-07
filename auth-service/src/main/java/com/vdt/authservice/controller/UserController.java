@@ -1,21 +1,20 @@
 package com.vdt.authservice.controller;
 
 import com.vdt.authservice.dto.request.user.RegisterRequest;
+import com.vdt.authservice.dto.request.user.ResendActivationRequest;
 import com.vdt.authservice.dto.response.ApiResponse;
 import com.vdt.authservice.dto.response.user.UserResponse;
 import com.vdt.authservice.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import com.vdt.authservice.exception.ErrorCode;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
@@ -25,6 +24,27 @@ public class UserController {
     public ApiResponse<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.register(request))
+                .build();
+    }
+
+    @GetMapping("/activate")
+    public ApiResponse<Void> activate(@RequestParam String token) {
+        userService.activateAccount(token);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/resend-activation")
+    public ApiResponse<Void> resendActivation(@Valid @RequestBody ResendActivationRequest request) {
+        userService.resendActivationEmail(request.getEmail());
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getAllUsers())
                 .build();
     }
 }

@@ -37,13 +37,13 @@ app:
       email: ${ADMIN_EMAIL}
       password: ${ADMIN_PASSWORD}
   security:
+    authenticated-endpoints:
+      "/auth/logout"
     public-endpoints:
-      "/api/v1/auth/login, 
-      /api/v1/user/register, 
-      /api/v1/auth/activate, 
-      /api/v1/auth/forgot-password, 
-      /api/v1/auth/reset-password, 
-      /api/v1/auth/refresh-token"
+      "/auth/**, 
+      /users/register, 
+      /users/activate,
+      /users/resend-activation"
     cors-allowed-origins: "http://localhost:3000"
     jwt:
       access-token-secret-key: ${JWT_ACCESS_SECRET_KEY}

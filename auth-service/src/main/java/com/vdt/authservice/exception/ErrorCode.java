@@ -33,7 +33,7 @@ public enum ErrorCode {
     TOKEN_BLACKLIST_FAILED(3003, "Failed to blacklist token", HttpStatus.INTERNAL_SERVER_ERROR),
     TOKEN_GENERATION_FAILED(3004, "Failed to generate token", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TOKEN_FORMAT(3005, "Invalid token format", HttpStatus.BAD_REQUEST),
-
+    USER_ALREADY_VERIFIED(3006, "This account was already verified before", HttpStatus.BAD_REQUEST),
 
     /**
      * Range 4xxx: Security, Authentication & System errors

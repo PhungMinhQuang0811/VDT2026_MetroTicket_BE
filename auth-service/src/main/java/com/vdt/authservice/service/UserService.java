@@ -61,4 +61,43 @@ public class UserService {
 
         return userMapper.toUserResponse(account);
     }
+
+    @Transactional
+    public void activateAccount(String token) {
+        String accountId = accountTokenService.getAccountIdByActivationToken(token);
+        if (accountId == null) {
+            throw new AppException(ErrorCode.INVALID_ONETIME_TOKEN);
+        }
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+
+        account.setActive(true);
+        account.setEmailVerified(true);
+        accountRepository.save(account);
+        
+        accountTokenService.deleteActivationToken(token);
+    }
+
+    public java.util.List<UserResponse> getAllUsers() {
+        return accountRepository.findAll().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
+    public void resendActivationEmail(String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_USED_BY_ANY_ACCOUNT));
+
+        if (account.isEmailVerified()) {
+            throw new AppException(ErrorCode.USER_ALREADY_VERIFIED);
+        }
+
+        String token = accountTokenService.getExistingActivationToken(account.getId());
+        if (token == null) {
+            token = accountTokenService.generateActivationToken(account.getId());
+        }
+
+        emailService.sendActivationEmail(account.getEmail(), token);
+    }
 }

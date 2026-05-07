@@ -88,22 +88,6 @@ public class AuthService {
         return authMapper.toAuthResponse(account);
     }
 
-    @Transactional
-    public void activateAccount(String token) {
-        String accountId = accountTokenService.getAccountIdByActivationToken(token);
-        if (accountId == null) {
-            throw new AppException(ErrorCode.INVALID_ONETIME_TOKEN);
-        }
-
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
-
-        account.setActive(true);
-        account.setEmailVerified(true);
-        accountRepository.save(account);
-        
-        accountTokenService.deleteActivationToken(token);
-    }
     public void forgotPassword(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_USED_BY_ANY_ACCOUNT));

@@ -35,6 +35,10 @@ public class SecurityConfig {
     JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @NonFinal
+    @Value("${app.security.authenticated-endpoints}")
+    String[] authenticatedEndpoints;
+
+    @NonFinal
     @Value("${app.security.public-endpoints}")
     String[] publicEndpoints;
 
@@ -53,6 +57,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(authenticatedEndpoints).authenticated()
                         .requestMatchers(publicEndpoints).permitAll()
                         .anyRequest().authenticated()
                 );

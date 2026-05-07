@@ -17,13 +17,19 @@ public class AccountTokenService {
     RedisUtil redisUtil;
     
     static final String ACTIVATION_PREFIX = "activation:";
+    static final String ACTIVATION_USER_PREFIX = "activation_user:";
     static final String RESET_PASSWORD_PREFIX = "reset-password:";
     static final long TOKEN_TTL_DAYS = 1;
 
     public String generateActivationToken(String accountId) {
         String token = UUID.randomUUID().toString();
         redisUtil.set(ACTIVATION_PREFIX + token, accountId, TOKEN_TTL_DAYS, TimeUnit.DAYS);
+        redisUtil.set(ACTIVATION_USER_PREFIX + accountId, token, TOKEN_TTL_DAYS, TimeUnit.DAYS);
         return token;
+    }
+
+    public String getExistingActivationToken(String accountId) {
+        return redisUtil.get(ACTIVATION_USER_PREFIX + accountId);
     }
 
     public String getAccountIdByActivationToken(String token) {
@@ -31,6 +37,10 @@ public class AccountTokenService {
     }
 
     public void deleteActivationToken(String token) {
+        String accountId = getAccountIdByActivationToken(token);
+        if (accountId != null) {
+            redisUtil.delete(ACTIVATION_USER_PREFIX + accountId);
+        }
         redisUtil.delete(ACTIVATION_PREFIX + token);
     }
 

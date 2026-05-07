@@ -57,13 +57,15 @@ public class JwtUtil {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(account.getEmail())
+                .subject(account.getId())
                 .issuer("vdt.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                     Instant.now().plus(accessTokenExpiration, ChronoUnit.MILLIS).toEpochMilli()
                 ))
                 .jwtID(java.util.UUID.randomUUID().toString())
+                .claim("email", account.getEmail())
+                .claim("username", account.getUsername())
                 .claim("scope", buildScope(account))
                 .claim("tokenType", TokenType.ACCESS_TOKEN)
                 .build();
@@ -85,7 +87,7 @@ public class JwtUtil {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(account.getEmail())
+                .subject(account.getId())
                 .issuer("vdt.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(

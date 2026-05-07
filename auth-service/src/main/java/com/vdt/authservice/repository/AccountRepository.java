@@ -11,4 +11,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     Optional<Account> findByEmail(String email);
+    
+    // TODO: Viết query tay (JPQL) tối ưu để load Account cùng Roles/Permissions thay cho EntityGraph
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"roles", "roles.permissions"})
+    Optional<Account> findById(String id);
 }

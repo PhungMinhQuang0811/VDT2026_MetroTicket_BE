@@ -1,7 +1,9 @@
 package com.vdt.authservice.security.auth;
 
 import com.nimbusds.jwt.SignedJWT;
+import com.vdt.authservice.security.entity.CustomUserDetails;
 import com.vdt.authservice.security.service.TokenManagementService;
+import com.vdt.authservice.security.service.UserPermissionService;
 import com.vdt.authservice.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtil jwtUtil;
     TokenManagementService tokenManagementService;
+    UserPermissionService userPermissionService;
 
     @NonFinal
     @Value("${app.security.jwt.access-token-cookie-name}")
@@ -53,15 +56,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && !tokenManagementService.isAccessTokenInvalidated(token)) {
             try {
                 SignedJWT signedJWT = jwtUtil.verifyAccessToken(token);
-                String email = signedJWT.getJWTClaimsSet().getSubject();
-                String scope = signedJWT.getJWTClaimsSet().getStringClaim("scope");
+                String userId = signedJWT.getJWTClaimsSet().getSubject();
+                String email = signedJWT.getJWTClaimsSet().getStringClaim("email");
+                String username = signedJWT.getJWTClaimsSet().getStringClaim("username");
 
-                List<SimpleGrantedAuthority> authorities = Arrays.stream(scope.split(" "))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                var authorities = userPermissionService.getUserPermissions(userId);
+
+                CustomUserDetails userDetails =
+                        new CustomUserDetails(userId, email, username, authorities);
 
                 UsernamePasswordAuthenticationToken authentication = 
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {

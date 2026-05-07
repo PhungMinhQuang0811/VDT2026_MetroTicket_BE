@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -22,6 +23,17 @@ public class RedisUtil {
 
     public String get(String key) {
         return redisTemplate.opsForValue().get(key);
+    }
+
+    public void addSet(String key, java.util.Collection<String> values, long timeout, TimeUnit unit) {
+        if (values != null && !values.isEmpty()) {
+            redisTemplate.opsForSet().add(key, values.toArray(new String[0]));
+            redisTemplate.expire(key, timeout, unit);
+        }
+    }
+
+    public Set<String> getSet(String key) {
+        return redisTemplate.opsForSet().members(key);
     }
 
     public void delete(String key) {

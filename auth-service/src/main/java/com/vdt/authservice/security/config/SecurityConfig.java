@@ -1,5 +1,6 @@
 package com.vdt.authservice.security.config;
 
+import com.vdt.authservice.constant.PredefinedPermission;
 import com.vdt.authservice.security.auth.JwtAuthenticationFilter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ import java.util.List;
 public class SecurityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
+    CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @NonFinal
     @Value("${app.security.authenticated-endpoints}")
@@ -59,10 +62,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(authenticatedEndpoints).authenticated()
                         .requestMatchers(publicEndpoints).permitAll()
+                        .requestMatchers("/users").hasAuthority(PredefinedPermission.ACCOUNT_READ)
                         .anyRequest().authenticated()
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
 
         return http.build();
     }

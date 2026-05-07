@@ -177,9 +177,9 @@ public class AuthService {
         }
         try {
             SignedJWT signedJWT = jwtUtil.verifyRefreshToken(refreshToken);
-            String email = signedJWT.getJWTClaimsSet().getSubject();
+            String accountId = signedJWT.getJWTClaimsSet().getSubject();
             
-            Account account = accountRepository.findByEmail(email)
+            Account account = accountRepository.findById(accountId)
                     .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
                     
             String newAccessToken = jwtUtil.generateToken(account);

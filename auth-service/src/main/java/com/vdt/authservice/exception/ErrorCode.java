@@ -34,17 +34,19 @@ public enum ErrorCode {
     TOKEN_GENERATION_FAILED(3004, "Failed to generate token", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TOKEN_FORMAT(3005, "Invalid token format", HttpStatus.BAD_REQUEST),
     USER_ALREADY_VERIFIED(3006, "This account was already verified before", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(3007, "User not found", HttpStatus.NOT_FOUND),
 
     /**
      * Range 4xxx: Security, Authentication & System errors
      */
     UNCATEGORIZED_EXCEPTION(4000, "There was error happen during run time", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_ERROR_KEY(4001, "The error key could be misspelled", HttpStatus.INTERNAL_SERVER_ERROR),
-    UNAUTHENTICATED(4002, "Unauthenticated access. The access token is invalid", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(4002, "Unauthenticated access", HttpStatus.UNAUTHORIZED),
     INVALID_REFRESH_TOKEN(4003, "Invalid refresh token. Please try again.", HttpStatus.UNAUTHORIZED),
     INVALID_ONETIME_TOKEN(4004, "The token is invalid or this link has expired or has been used.", HttpStatus.BAD_REQUEST),
     EMAIL_NOT_VERIFIED(4005, "Your email has not been verified. Please check your inbox.", HttpStatus.FORBIDDEN),
     ACCOUNT_DISABLED(4006, "Your account is currently disabled or inactive.", HttpStatus.FORBIDDEN),
+    ACCESS_DENIED(4007, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
     ;
 
     int code;

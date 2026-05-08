@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ public class UserPermissionService {
     static final String PERM_CACHE_PREFIX = "user_perms:";
     static final long PERM_CACHE_TTL = 1; // 1 day
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Collection<? extends GrantedAuthority> getUserPermissions(String accountId) {
         String cacheKey = PERM_CACHE_PREFIX + accountId;
         
@@ -57,7 +58,6 @@ public class UserPermissionService {
         List<String> perms = new ArrayList<>();
         if (!CollectionUtils.isEmpty(account.getRoles())) {
             for (Role role : account.getRoles()) {
-                perms.add("ROLE_" + role.getName());
                 if (!CollectionUtils.isEmpty(role.getPermissions())) {
                     role.getPermissions().forEach(p -> perms.add(p.getName()));
                 }

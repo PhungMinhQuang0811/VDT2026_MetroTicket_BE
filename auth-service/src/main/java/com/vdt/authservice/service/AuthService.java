@@ -64,7 +64,7 @@ public class AuthService {
     String refreshTokenCookieName;
 
     public AuthResponse login(LoginRequest request, HttpServletResponse response) {
-        Account account = accountRepository.findByEmail(request.getEmail())
+        Account account = accountRepository.findByIdentifier(request.getIdentifier())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
 
         if (!account.isEmailVerified()) {
@@ -76,7 +76,7 @@ public class AuthService {
         }
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword())
         );
 
         String token = jwtUtil.generateToken(account);

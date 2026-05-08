@@ -2,6 +2,8 @@ package com.vdt.authservice.repository;
 
 import com.vdt.authservice.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -11,8 +13,16 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     Optional<Account> findByEmail(String email);
-    
-    // TODO: Viết query tay (JPQL) tối ưu để load Account cùng Roles/Permissions thay cho EntityGraph
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"roles", "roles.permissions"})
-    Optional<Account> findById(String id);
+
+    @Query("SELECT a FROM Account a " +
+            "LEFT JOIN FETCH a.roles r " +
+            "LEFT JOIN FETCH r.permissions " +
+            "WHERE a.email = :identifier OR a.username = :identifier")
+    Optional<Account> findByIdentifier(@Param("identifier") String identifier);
+
+    @Query("SELECT a FROM Account a " +
+            "LEFT JOIN FETCH a.roles r " +
+            "LEFT JOIN FETCH r.permissions " +
+            "WHERE a.id = :id")
+    Optional<Account> findById(@Param("id") String id);
 }

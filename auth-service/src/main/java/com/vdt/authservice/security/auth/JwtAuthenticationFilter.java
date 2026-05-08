@@ -1,6 +1,8 @@
 package com.vdt.authservice.security.auth;
 
 import com.nimbusds.jwt.SignedJWT;
+import com.vdt.authservice.exception.AppException;
+import com.vdt.authservice.exception.ErrorCode;
 import com.vdt.authservice.security.entity.CustomUserDetails;
 import com.vdt.authservice.security.service.TokenManagementService;
 import com.vdt.authservice.security.service.UserPermissionService;
@@ -62,15 +64,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 var authorities = userPermissionService.getUserPermissions(userId);
 
-                CustomUserDetails userDetails =
-                        new CustomUserDetails(userId, email, username, authorities);
+                CustomUserDetails userDetails = CustomUserDetails.builder()
+                        .id(userId)
+                        .email(email)
+                        .username(username)
+                        .authorities(authorities)
+                        .build();
 
                 UsernamePasswordAuthenticationToken authentication = 
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                log.error("Cannot set user authentication", e);
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
         }
 

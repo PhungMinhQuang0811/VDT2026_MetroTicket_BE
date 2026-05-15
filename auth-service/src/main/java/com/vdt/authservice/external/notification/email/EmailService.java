@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class EmailService implements IEmailService {
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${app.email}")
     String fromEmail;
 
     @Value("${app.security.cors-allowed-origins}")

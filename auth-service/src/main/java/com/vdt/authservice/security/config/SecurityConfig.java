@@ -1,6 +1,5 @@
 package com.vdt.authservice.security.config;
 
-import com.vdt.authservice.constant.PredefinedPermission;
 import com.vdt.authservice.constant.SecurityConstants;
 import com.vdt.authservice.security.auth.JwtAuthenticationFilter;
 import com.vdt.authservice.security.repository.CustomCsrfTokenRepository;
@@ -31,7 +30,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity

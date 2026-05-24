@@ -1,5 +1,6 @@
 package com.vdt.authservice.security.service;
 
+import com.vdt.authservice.modules.identity.security.service.TokenManagementService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

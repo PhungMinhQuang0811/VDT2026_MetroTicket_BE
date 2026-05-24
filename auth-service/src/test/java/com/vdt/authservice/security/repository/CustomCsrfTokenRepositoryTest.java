@@ -1,5 +1,6 @@
 package com.vdt.authservice.security.repository;
 
+import com.vdt.authservice.modules.identity.security.repository.CustomCsrfTokenRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

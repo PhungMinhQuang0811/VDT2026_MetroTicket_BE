@@ -1,11 +1,11 @@
 package com.vdt.authservice.security.service;
 
-import com.vdt.authservice.entity.Account;
-import com.vdt.authservice.entity.Permission;
-import com.vdt.authservice.entity.Role;
-import com.vdt.authservice.exception.AppException;
-import com.vdt.authservice.repository.AccountRepository;
-import com.vdt.authservice.security.entity.CustomUserDetails;
+import com.vdt.authservice.modules.identity.entity.Account;
+import com.vdt.authservice.modules.identity.entity.Permission;
+import com.vdt.authservice.modules.identity.entity.Role;
+import com.vdt.authservice.common.exception.AppException;
+import com.vdt.authservice.modules.identity.security.service.CustomUserDetailsService;
+import com.vdt.authservice.modules.identity.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

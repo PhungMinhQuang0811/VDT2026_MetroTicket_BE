@@ -1,6 +1,7 @@
 package com.vdt.authservice.security.util;
 
-import com.vdt.authservice.security.entity.CustomUserDetails;
+import com.vdt.authservice.modules.identity.security.entity.CustomUserDetails;
+import com.vdt.authservice.modules.identity.security.util.SecurityUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,13 @@
 package com.vdt.authservice.config;
 
-import com.vdt.authservice.constant.PredefinedPermission;
-import com.vdt.authservice.constant.PredefinedRole;
-import com.vdt.authservice.entity.Account;
-import com.vdt.authservice.entity.Permission;
-import com.vdt.authservice.entity.Role;
-import com.vdt.authservice.repository.AccountRepository;
-import com.vdt.authservice.repository.PermissionRepository;
-import com.vdt.authservice.repository.RoleRepository;
+import com.vdt.authservice.modules.identity.constant.PredefinedPermission;
+import com.vdt.authservice.modules.identity.constant.PredefinedRole;
+import com.vdt.authservice.modules.identity.entity.Account;
+import com.vdt.authservice.modules.identity.entity.Permission;
+import com.vdt.authservice.modules.identity.entity.Role;
+import com.vdt.authservice.modules.identity.repository.AccountRepository;
+import com.vdt.authservice.modules.identity.repository.PermissionRepository;
+import com.vdt.authservice.modules.identity.repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

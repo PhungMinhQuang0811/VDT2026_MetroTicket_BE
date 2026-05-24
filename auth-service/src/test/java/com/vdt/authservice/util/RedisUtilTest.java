@@ -1,6 +1,6 @@
 package com.vdt.authservice.util;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.vdt.authservice.common.util.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

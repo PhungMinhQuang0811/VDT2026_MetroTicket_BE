@@ -1,6 +1,7 @@
 package com.vdt.authservice.security.service;
 
-import com.vdt.authservice.util.RedisUtil;
+import com.vdt.authservice.modules.identity.security.service.AccountTokenService;
+import com.vdt.authservice.common.util.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

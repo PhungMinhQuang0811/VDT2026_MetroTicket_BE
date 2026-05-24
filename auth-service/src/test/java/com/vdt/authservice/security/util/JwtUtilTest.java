@@ -1,9 +1,11 @@
 package com.vdt.authservice.security.util;
 
 import com.nimbusds.jwt.SignedJWT;
-import com.vdt.authservice.entity.Account;
-import com.vdt.authservice.entity.Role;
-import com.vdt.authservice.exception.AppException;
+import com.vdt.authservice.modules.identity.entity.Account;
+import com.vdt.authservice.modules.identity.entity.Role;
+import com.vdt.authservice.modules.identity.entity.Permission;
+import com.vdt.authservice.common.exception.AppException;
+import com.vdt.authservice.modules.identity.security.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,7 +99,7 @@ class JwtUtilTest {
 
     @Test
     void generateToken_WithRolesAndPermissions_Success() throws Exception {
-        com.vdt.authservice.entity.Permission p1 = com.vdt.authservice.entity.Permission.builder().name("READ").build();
+        Permission p1 = Permission.builder().name("READ").build();
         Role role = Role.builder().name("USER").permissions(Set.of(p1)).build();
         mockAccount.setRoles(Set.of(role));
         

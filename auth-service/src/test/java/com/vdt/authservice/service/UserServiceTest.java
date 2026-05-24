@@ -1,15 +1,16 @@
 package com.vdt.authservice.service;
 
-import com.vdt.authservice.dto.request.user.RegisterRequest;
-import com.vdt.authservice.dto.response.user.UserResponse;
-import com.vdt.authservice.entity.Account;
-import com.vdt.authservice.exception.AppException;
-import com.vdt.authservice.exception.ErrorCode;
-import com.vdt.authservice.external.notification.email.EmailService;
-import com.vdt.authservice.mapper.UserMapper;
-import com.vdt.authservice.repository.AccountRepository;
-import com.vdt.authservice.repository.RoleRepository;
-import com.vdt.authservice.security.service.AccountTokenService;
+import com.vdt.authservice.modules.identity.dto.request.user.RegisterRequest;
+import com.vdt.authservice.modules.identity.dto.response.user.UserResponse;
+import com.vdt.authservice.modules.identity.entity.Account;
+import com.vdt.authservice.common.exception.AppException;
+import com.vdt.authservice.common.exception.ErrorCode;
+import com.vdt.authservice.common.notification.email.EmailService;
+import com.vdt.authservice.modules.identity.service.UserService;
+import com.vdt.authservice.modules.identity.mapper.UserMapper;
+import com.vdt.authservice.modules.identity.repository.AccountRepository;
+import com.vdt.authservice.modules.identity.repository.RoleRepository;
+import com.vdt.authservice.modules.identity.security.service.AccountTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

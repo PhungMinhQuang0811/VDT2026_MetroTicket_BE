@@ -48,6 +48,9 @@ public class ApplicationInitConfig {
                                         PermissionRepository permissionRepository,
                                         PasswordEncoder passwordEncoder) {
         return args -> {
+            // =========================================================================
+            // BƯỚC 1: KHỞI TẠO DANH MỤC PERMISSIONS (Reflection + Enum mô tả)
+            // =========================================================================
             log.info("Checking and initializing missing permissions...");
             Field[] fields = PredefinedPermission.class.getDeclaredFields();
             for (Field field : fields) {
@@ -73,48 +76,43 @@ public class ApplicationInitConfig {
                 }
             }
 
-            if (roleRepository.count() == 0 && accountRepository.count() == 0) {
-                log.info("Initializing default roles and admin account...");
+            // =========================================================================
+            // BƯỚC 2: KHỞI TẠO VÀ ĐỒNG BỘ DANH MỤC ROLES (Quét cuốn chiếu từng Role)
+            // =========================================================================
+            log.info("Checking and initializing missing roles...");
 
-                // --- ĐOẠN SỬA ĐỔI CHÍNH XÁC: CHỈ LẤY ĐÚNG CÁC QUYỀN ĐÃ ĐỊNH NGHĨA TRONG ENUM ---
-                Set<Permission> adminPermissions = new HashSet<>();
-
-                for (PredefinedPermission.Definition permissionDefinition : PredefinedPermission.Definition.values()) {
-                    // Chủ động tìm kiếm thực thể Permission dưới DB bằng chính xác chuỗi định danh (Name)
-                    Permission savedPerm = permissionRepository.findByName(permissionDefinition.getName()).orElse(null);
-                    if (savedPerm != null) {
-                        adminPermissions.add(savedPerm);
-                    }
+            // Lấy bộ quyền tối giản của hệ thống Auth hiện có để chuẩn bị gán cho Admin
+            Set<Permission> adminPermissions = new HashSet<>();
+            for (PredefinedPermission.Definition permissionDefinition : PredefinedPermission.Definition.values()) {
+                Permission savedPerm = permissionRepository.findByName(permissionDefinition.getName()).orElse(null);
+                if (savedPerm != null) {
+                    adminPermissions.add(savedPerm);
                 }
-                // -----------------------------------------------------------------------------
+            }
 
-                // Khởi tạo danh mục các Role nền tảng cho hệ thống
-                Role adminRole = null;
+            // Duyệt cuốn chiếu qua từng định nghĩa Role, thiếu ông nào đắp ông đấy ngay lập tức
+            for (PredefinedRole.Definition roleDefinition : PredefinedRole.Definition.values()) {
+                Set<Permission> rolePermissions;
 
-                for (PredefinedRole.Definition roleDefinition : PredefinedRole.Definition.values()) {
-                    Set<Permission> rolePermissions;
-
-                    // Nếu đúng là vai trò ADMIN thì mới đắp bộ quyền Identity tối giản vừa lọc ở trên vào
-                    if (roleDefinition.getName().equals(PredefinedRole.ADMIN)) {
-                        rolePermissions = adminPermissions; // <--- Chỉ gán đúng các quyền Auth cơ bản, tuyệt đối không gán All bừa bãi
-                    } else {
-                        rolePermissions = new HashSet<>(); // Các role khác để trống quyền để cấu hình động sau
-                    }
-
-                    Role role = Role.builder()
-                            .name(roleDefinition.getName())
-                            .description(roleDefinition.getDescription())
-                            .permissions(rolePermissions)
-                            .build();
-
-                    Role savedRole = roleRepository.save(role);
-
-                    if (roleDefinition.getName().equals(PredefinedRole.ADMIN)) {
-                        adminRole = savedRole;
-                    }
+                // Nếu đúng là vai trò ADMIN kỹ thuật thì gán danh mục quyền tối giản cốt lõi vào
+                if (roleDefinition.getName().equals(PredefinedRole.ADMIN)) {
+                    rolePermissions = adminPermissions;
+                } else {
+                    rolePermissions = new HashSet<>(); // Các role khác để trống quyền để gán động sau
                 }
 
-                // Khởi tạo DUY NHẤT 1 tài khoản Admin tối cao của hệ thống
+                // Gọi hàm bọc kiểm tra: Chưa có dưới DB thì mới tạo mới
+                createRole(roleRepository, roleDefinition.getName(), roleDefinition.getDescription(), rolePermissions);
+            }
+
+            // =========================================================================
+            // BƯỚC 3: KHỞI TẠO DUY NHẤT 1 TÀI KHOẢN ADMIN
+            // =========================================================================
+            if (accountRepository.count() == 0) {
+                log.info("Initializing root admin account...");
+
+                Role adminRole = roleRepository.findByName(PredefinedRole.ADMIN).orElse(null);
+
                 if (adminRole != null) {
                     Account adminAccount = Account.builder()
                             .email(adminEmail)
@@ -128,7 +126,7 @@ public class ApplicationInitConfig {
                     accountRepository.save(adminAccount);
                     log.info("Initialization completed successfully. Admin account created.");
                 } else {
-                    log.error("Failed to initialize system: Admin role could not be found.");
+                    log.error("Failed to initialize system: Admin role could not be found in Database.");
                 }
             }
         };
@@ -138,6 +136,18 @@ public class ApplicationInitConfig {
         repository.findByName(name).orElseGet(() -> {
             Permission p = Permission.builder().name(name).description(description).build();
             return repository.save(p);
+        });
+    }
+
+    // Thêm hàm bọc kiểm tra Role tương đương với hàm createPermission của bạn
+    private void createRole(RoleRepository repository, String name, String description, Set<Permission> permissions) {
+        repository.findByName(name).orElseGet(() -> {
+            Role r = Role.builder()
+                    .name(name)
+                    .description(description)
+                    .permissions(permissions)
+                    .build();
+            return repository.save(r);
         });
     }
 }

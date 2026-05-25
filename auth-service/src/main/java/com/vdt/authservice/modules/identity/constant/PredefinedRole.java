@@ -29,7 +29,7 @@ public class PredefinedRole {
     @Getter
     @RequiredArgsConstructor
     public enum Definition {
-        ADMIN("Quản trị viên hệ thống - Quản lý cấu hình hệ thống, biểu giá và đối soát tổng"),
+        ADMIN("Quản trị viên hệ thống - Quản lý cấu hình hệ thống"),
         PLATFORM_MANAGER("Quản lý nền tảng - Khởi tạo không gian làm việc (Workspace) cho đơn vị mới, cấu hình biểu giá trần và giám sát đối soát"),
         COMPANY_MANAGER("Quản lý đơn vị vận hành - Quản lý nhân sự, ca trực và báo cáo doanh thu nội bộ đơn vị"),
         STAFF("Nhân viên vận hành - Trực ca kíp tại quầy, hỗ trợ hành khách xử lý sự cố thẻ lỗi"),

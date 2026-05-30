@@ -353,7 +353,7 @@ Database `auth_db` tập trung quản lý thông tin tài khoản định danh, 
 CREATE TABLE accounts (
     id VARCHAR(36) PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
+    password VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(15) UNIQUE,
     full_name VARCHAR(100),
